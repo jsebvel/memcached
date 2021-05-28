@@ -50,4 +50,23 @@ class Member
         values[key]=value
         socket.puts("The value was set")
     end
+
+    def append(key, value)
+        values[key] = "#{values[key]}, #{value}"
+        socket.puts("The value was append to key #{key}.")
+    end
+
+    def prepend(key, value)
+        values[key] = "#{value}, #{values[key]}"
+        socket.puts("The value was prepend.")
+    end
+
+    def replace(key, value)
+        if (values.has_key?(key))
+            values[key] = value
+            socket.puts("The value for key #{key} was updated.")
+        else
+            socket.puts("The key #{key} does not have a value yet.")
+        end 
+    end
 end

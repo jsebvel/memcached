@@ -16,14 +16,14 @@ class Members
         @members.delete(member)
     end
 
-    def broadcast(message, sender)
-        sender.prompt
-        receivers = @members - [sender]
-        receivers.each do |receiver|
-            receiver.socket.print("\n> #{sender.username}: #{message}")
-            receiver.newline_prompt
-        end
-    end
+    # def broadcast(message, sender)
+    #     sender.prompt
+    #     receivers = @members - [sender]
+    #     receivers.each do |receiver|
+    #         receiver.socket.print("\n> #{sender.username}: #{message}")
+    #         receiver.newline_prompt
+    #     end
+    # end
 
     def register(socket)
         username = get_member_info(socket)
@@ -38,12 +38,12 @@ class Members
         loop do
             message = member.listen
             handleCommand(message.split(" "), member)
-            broadcast(message, member)
+            #broadcast(message, member)
         end
     end
 
     def disconnect(member)
-        broadcast("[left]", member.username)
+        #broadcast("[left]", member.username)
         member.disconnect
         remove(member)
     end
@@ -57,16 +57,25 @@ class Members
     private
     def handleCommand(message, member)
         command, key, value = message
-        print("#{command}")
+        print("#{command}\n")
         case command
         when "add"
             member.add(key, value)
         when "get"
-            print("Enter in get")
+            print("Enter in get \n")
             member.get(key, value)
         when "set"
-            print("Enter set")
+            print("Enter set\n")
             member.set(key, value)
+        when "append"
+            print("Enter print\n")
+            member.append(key, value)
+        when "prepend"
+            print("Enter prepend \n")
+            member.prepend(key, value)
+        when "replace"
+            print("Enter replace \n")
+            member.replace(key, value)
         else
             member.socket.puts("We can't find the command '#{command}'.")
         end    

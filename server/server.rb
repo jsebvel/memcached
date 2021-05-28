@@ -3,9 +3,10 @@ require '../client/member'
 require '../client/members'
 
 chunk_size = 1024
-server = TCPServer.new(2000)
+port = 2000
+server = TCPServer.new(port)
 members = Members.new
-
+puts("Server start at port #{port}")
 while true
     connection = server.accept
     Thread.new(connection) do |socket|
