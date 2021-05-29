@@ -1,14 +1,15 @@
 class Member
-    attr_reader :username, :socket, :values
+    attr_reader :username, :socket #:values
 
     def initialize(username, socket)
         @username = username
         @socket = socket
-        @values = {}
+        #@values = {}
     end
 
     def welcome_from(members)
-        socket.print "Welcome #{username}, Please enter commands here.\n >"
+        socket.print "Welcome #{username}, Please enter commands here.\n"
+        newline_prompt()
     end
 
     def prompt
@@ -29,44 +30,68 @@ class Member
 
     #Commands accepted
 
-    def add(key, value)
+    def add(key, value, values)
         print(key)
         print(values)
         unless values.has_key?(key)
-            values[key] = value
+            values[key] = {value => socket}
             socket.puts("The value was store")
             print(values)
         else
             socket.puts("The key already exists maybe you want to update it")
         end
+        newline_prompt()
     end
 
-    def get(key, value)
+    def get(key, value, values)
         print(values)
-        values.has_key?(key) ? socket.puts("The value for #{key} is #{values[key]}") : socket.puts("There are not a value for key '#{key}'.")
+        values.has_key?(key) ? socket.puts("The value for #{key} is #{values[key].keys[0]}") : socket.puts("There are not a value for key '#{key}'.")
+        newline_prompt()
     end
 
-    def set(key, value)
+    def set(key, value, values)
+        print(socket)
         values[key]=value
         socket.puts("The value was set")
+        newline_prompt()
     end
 
     def append(key, value)
         values[key] = "#{values[key]}, #{value}"
         socket.puts("The value was append to key #{key}.")
+        newline_prompt()
     end
 
     def prepend(key, value)
         values[key] = "#{value}, #{values[key]}"
         socket.puts("The value was prepend.")
+        newline_prompt()
     end
 
     def replace(key, value)
         if (values.has_key?(key))
             values[key] = value
-            socket.puts("The value for key #{key} was updated.")
+            socket.puts("The value for key #{key} was replaced.")
         else
             socket.puts("The key #{key} does not have a value yet.")
         end 
+        newline_prompt()
+    end
+
+    def cas(key, value, values)
+        current_value_key = ''
+        if(values.has_key?(key))
+            current_value_key = values[key].keys[0]
+            print("#{values[key][current_value_key]}---#{socket}")
+            if (values[key][current_value_key] == socket)
+                values[key] = {value => socket}
+                socket.puts("The value was updated with #{value}")
+            else
+                socket.puts("The value can't cas by you beacouse other user updated the value for #{key}.")
+            end
+        else
+            socket.puts("The key does not exist.")
+        end 
+        newline_prompt()
     end
 end

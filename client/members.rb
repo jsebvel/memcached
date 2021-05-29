@@ -2,6 +2,7 @@ class Members
     include Enumerable
     def initialize
         @members = []
+        @values = {}
     end
 
     def each
@@ -37,7 +38,7 @@ class Members
     def start_listening_to(member)
         loop do
             message = member.listen
-            handleCommand(message.split(" "), member)
+            handleCommand(message.split(" "), member, @values)
             #broadcast(message, member)
         end
     end
@@ -50,23 +51,23 @@ class Members
 
     private
     def get_member_info(socket)
-        socket.print "What's your name? \n"
+        socket.print "What's your name? \n>"
         username = socket.gets.chomp
     end
 
     private
-    def handleCommand(message, member)
+    def handleCommand(message, member, values)
         command, key, value = message
         print("#{command}\n")
         case command
         when "add"
-            member.add(key, value)
+            member.add(key, value, values)
         when "get"
             print("Enter in get \n")
-            member.get(key, value)
+            member.get(key, value, values)
         when "set"
             print("Enter set\n")
-            member.set(key, value)
+            member.set(key, value, values)
         when "append"
             print("Enter print\n")
             member.append(key, value)
@@ -76,6 +77,9 @@ class Members
         when "replace"
             print("Enter replace \n")
             member.replace(key, value)
+        when "cas"
+            print("Enter cas \n")
+            member.cas(key, value, values)
         else
             member.socket.puts("We can't find the command '#{command}'.")
         end    
