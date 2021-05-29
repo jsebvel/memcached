@@ -80,8 +80,11 @@ class Members
         when "cas"
             print("Enter cas \n")
             member.cas(key, value, values)
+        when "help"
+            member.help()
         else
-            member.socket.puts("We can't find the command '#{command}'.")
+            member.socket.puts("We can't find the command '#{command}'. enter help to see the accepted commands")
+            member.socket.puts(">")
         end    
     end
 

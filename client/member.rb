@@ -77,7 +77,7 @@ class Member
         end 
         newline_prompt()
     end
-
+    
     def cas(key, value, values)
         current_value_key = ''
         if(values.has_key?(key))
@@ -92,6 +92,19 @@ class Member
         else
             socket.puts("The key does not exist.")
         end 
+        newline_prompt()
+    end
+    
+    def help()
+        socket.puts("This is the list with know commands
+        * set \n
+        * add \n
+        * replace \n
+        * append \n
+        * prepend \n
+        * cas \n
+        * get \n
+        * gets") 
         newline_prompt()
     end
 end
