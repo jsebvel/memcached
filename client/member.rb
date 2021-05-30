@@ -69,11 +69,14 @@ class Member
     end
 
     def replace(key, value)
-        if (values.has_key?(key))
-            values[key] = value
-            socket.puts("The value for key #{key} was replaced.")
+        current_value_key = ''
+        if(values.has_key?(key))
+            current_value_key = values[key].keys[0]
+            print("#{values[key][current_value_key]}---#{socket}")
+            values[key] = {value => socket}
+            socket.puts("The value was updated with #{value}")
         else
-            socket.puts("The key #{key} does not have a value yet.")
+            socket.puts("The key does not exist.")
         end 
         newline_prompt()
     end

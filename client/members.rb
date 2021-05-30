@@ -1,3 +1,4 @@
+require '../command/command'
 class Members
     include Enumerable
     def initialize
@@ -57,6 +58,15 @@ class Members
 
     private
     def handleCommand(message, member, values)
+        new_command = Command.new(
+            command_name,
+            key,
+            flags,
+            exptime,
+            bytes,
+            no_reply,
+            can_get
+        )
         command, key, value = message
         print("#{command}\n")
         case command
@@ -83,7 +93,7 @@ class Members
         when "help"
             member.help()
         else
-            member.socket.puts("We can't find the command '#{command}'. enter help to see the accepted commands")
+            member.socket.puts("ERROR We can't find the command '#{command}'. enter help to see the accepted commands")
             member.socket.puts(">")
         end    
     end
