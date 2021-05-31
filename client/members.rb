@@ -62,64 +62,31 @@ class Members
         command_name, key, flags, exptime, bytes, no_reply = message
         #can_get = assign_can_get(exptime)
         new_command  = Command.new(member_socket, command_name, key, flags, exptime, bytes, no_reply, true)
-        print("new command-#{new_command.exptime}")
-        if (exptime.to_i > 0)
-            verify_exp_time(new_command)
-        end
-
-        case command
+        case command_name
         when "add"
-            member.add(new_command)
+            member.add(new_command, values)
         when "get"
             print("Enter in get \n")
-            member.get(key, value, values)
+            member.get(key, values)
         when "set"
-            print("Enter set\n")
-            member.set(key, value, values)
-        when "append"
-            print("Enter print\n")
-            member.append(key, value)
-        when "prepend"
-            print("Enter prepend \n")
-            member.prepend(key, value)
+            member.set(new_command, values)
+        # when "append"
+        #     print("Enter print\n")
+        #     member.append(key, value)
+        # when "prepend"
+        #     print("Enter prepend \n")
+        #     member.prepend(key, value)
         when "replace"
             print("Enter replace \n")
-            member.replace(key, value)
-        when "cas"
-            print("Enter cas \n")
-            member.cas(key, value, values)
-        when "help"
-            member.help()
+            member.replace(new_command, values)
+        # when "cas"
+        #     print("Enter cas \n")
+        #     member.cas(key, value, values)
+        # when "help"
+        #     member.help()
         else
             member.socket.puts("ERROR We can't find the command '#{command}'. enter help to see the accepted commands")
             member.socket.puts(">")
         end    
     end
-
-    def assign_can_get(exp_time)
-        #print("extime #{exp_time}")
-        case exp_time
-        when exp_time.to_i == 0 ||  exp_time.to_i > 0
-            true
-        else
-            true
-        end
-    end
-
-    def verify_exp_time(new_command)
-        print("#{new_command}\n")
-        print("pre")
-        Thread.new(new_command.exptime) do
-            while new_command.exptime.to_i > 0
-                print("In #{new_command.exptime}\n")
-                new_command.exptime = new_command.exptime.to_i - 1
-                print(new_command.can_get)
-                sleep(1)
-            end
-            #print("Out #{new_command.exptime}")
-            new_command.can_get = false
-            print(new_command.can_get)
-        end
-    end
-
 end
