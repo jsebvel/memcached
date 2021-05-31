@@ -30,9 +30,9 @@ class Member
 
     #Commands accepted
 
-    def add(key, value, values)
+    def add(new_command, values)
         unless values.has_key?(key)
-            values[key] = {value => socket}
+            values[new_command.command_name] = {value => socket}
             socket.puts("The value was store")
         else
             socket.puts("The key already exists maybe you want to update it")
@@ -51,7 +51,7 @@ class Member
         newline_prompt()
     end
 
-    def append(key, value)
+    def append(new_command)
         values[key] = "#{values[key]}, #{value}"
         socket.puts("The value was append to key #{key}.")
         newline_prompt()
