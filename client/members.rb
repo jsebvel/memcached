@@ -58,20 +58,18 @@ class Members
 
     private
     def handleCommand(message, member, values)
-        new_command = Command.new(
-            command_name,
-            key,
-            flags,
-            exptime,
-            bytes,
-            no_reply,
-            can_get
-        )
-        command, key, value = message
-        print("#{command}\n")
+        member_socket = member.socket
+        command_name, key, flags, exptime, bytes, no_reply = message
+        #can_get = assign_can_get(exptime)
+        new_command  = Command.new(member_socket, command_name, key, flags, exptime, bytes, no_reply, true)
+        print("new command-#{new_command.exptime}")
+        if (exptime.to_i > 0)
+            verify_exp_time(new_command)
+        end
+
         case command
         when "add"
-            member.add(key, value, values)
+            member.add(new_command)
         when "get"
             print("Enter in get \n")
             member.get(key, value, values)
@@ -96,6 +94,32 @@ class Members
             member.socket.puts("ERROR We can't find the command '#{command}'. enter help to see the accepted commands")
             member.socket.puts(">")
         end    
+    end
+
+    def assign_can_get(exp_time)
+        #print("extime #{exp_time}")
+        case exp_time
+        when exp_time.to_i == 0 ||  exp_time.to_i > 0
+            true
+        else
+            true
+        end
+    end
+
+    def verify_exp_time(new_command)
+        print("#{new_command}\n")
+        print("pre")
+        Thread.new(new_command.exptime) do
+            while new_command.exptime.to_i > 0
+                print("In #{new_command.exptime}\n")
+                new_command.exptime = new_command.exptime.to_i - 1
+                print(new_command.can_get)
+                sleep(1)
+            end
+            #print("Out #{new_command.exptime}")
+            new_command.can_get = false
+            print(new_command.can_get)
+        end
     end
 
 end

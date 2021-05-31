@@ -31,12 +31,9 @@ class Member
     #Commands accepted
 
     def add(key, value, values)
-        print(key)
-        print(values)
         unless values.has_key?(key)
             values[key] = {value => socket}
             socket.puts("The value was store")
-            print(values)
         else
             socket.puts("The key already exists maybe you want to update it")
         end
@@ -44,13 +41,11 @@ class Member
     end
 
     def get(key, value, values)
-        print(values)
         values.has_key?(key) ? socket.puts("The value for #{key} is #{values[key].keys[0]}") : socket.puts("There are not a value for key '#{key}'.")
         newline_prompt()
     end
 
     def set(key, value, values)
-        print(socket)
         values[key]=value
         socket.puts("The value was set")
         newline_prompt()
@@ -66,13 +61,12 @@ class Member
         values[key] = "#{value}, #{values[key]}"
         socket.puts("The value was prepend.")
         newline_prompt()
-    end
+    end 
 
     def replace(key, value)
         current_value_key = ''
         if(values.has_key?(key))
             current_value_key = values[key].keys[0]
-            print("#{values[key][current_value_key]}---#{socket}")
             values[key] = {value => socket}
             socket.puts("The value was updated with #{value}")
         else
@@ -85,7 +79,6 @@ class Member
         current_value_key = ''
         if(values.has_key?(key))
             current_value_key = values[key].keys[0]
-            print("#{values[key][current_value_key]}---#{socket}")
             if (values[key][current_value_key] == socket)
                 values[key] = {value => socket}
                 socket.puts("The value was updated with #{value}")
