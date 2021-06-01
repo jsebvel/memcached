@@ -8,12 +8,8 @@ class Member
     end
 
     def welcome_from(members)
-        socket.print "Welcome #{username}, Please enter commands here.\n"
+        socket.print "Welcome #{username}, Please enter commands in the next line.\nRemember command structure 'command name' 'key' 'data' 'except time' 'bytes' 'no reply'. \n"
         newline_prompt()
-    end
-
-    def prompt
-        socket.print("\n>")
     end
 
     def newline_prompt
@@ -34,12 +30,20 @@ class Member
         unless values.has_key?(new_command.key)
             values[new_command.key] = new_command
             new_command.can_get = assign_can_get(new_command.exptime)
-            socket.puts("STORED -> The value was store")
+            if new_command.reply
+                if new_command.reply.downcase == 'y' 
+                    store_message()
+                end
+            end
             if (new_command.exptime.to_i > 0 && new_command.can_get)
                 verify_exp_time(new_command)
             end
         else
-            socket.puts("The key already exists maybe you want to update it")
+            if new_command.reply
+                if new_command.reply.downcase == 'y' 
+                    exists_message()
+                end
+            end
         end
         newline_prompt()
     end
@@ -49,64 +53,98 @@ class Member
         if (!resp.nil? && resp.can_get)
             socket.puts("The value for #{key} is #{resp.data}")
         else
-            socket.puts("There are not a value for key '#{key}'.")
+            socket.puts("NOT_FOUND '#{key}'.")
         end
         newline_prompt()
     end
 
     def set(new_comand, values)
         values[new_command.key]=new_command
-        socket.puts("The value was set")
+        socket.puts("STORE => The value was set")
         newline_prompt()
     end
 
-    def append(new_command, values)
-        if (values.has_key? (command.key))
-            values[key].can_get = assign_can_get(new_command.exptime)
-            values[key].exptime = new_command.exptime
-            values[key].data = "#{values[key].data} #{new_comand.data}"
+    def append_prepend(new_command, values)
+        if (values.has_key? (new_command.key))
+            values[new_command.key].can_get = assign_can_get(new_command.exptime)
+            values[new_command.key].exptime = new_command.exptime
+            if (new_command.command_name == 'append')
+                values[new_command.key].data = "#{values[new_command.key].data} #{new_command.data}"
+            elsif((new_command.command_name == 'prepend'))
+                values[new_command.key].data = "#{new_command.data} #{values[new_command.key].data}"
+            end
+            if new_command.reply
+                if new_command.reply.downcase == 'y' 
+                    store_message()
+                end
+            end
             if (new_command.exptime.to_i > 0 && new_command.can_get)
                 verify_exp_time(new_command)
+            end
+        else
+            if new_command.reply
+                if new_command.reply.downcase == 'y' 
+                    not_found_message()
+                end
             end
         end
         newline_prompt()
     end
 
-    def prepend(key, value)
-        values[key] = "#{value}, #{values[key]}"
-        socket.puts("The value was prepend.")
-        newline_prompt()
-    end 
-
     def replace(new_command, values)
         current_value = ''
         if(values.has_key?(new_command.key) && values[new_command.key].can_get )
             current_value = values[new_command.key]
+            current_value.member_socket = new_command.member_socket
             current_value.data = new_command.data
             current_value.exptime = new_command.exptime
             current_value.can_get = assign_can_get(new_command.exptime)
             if (new_command.exptime.to_i > 0 && new_command.can_get)
                 verify_exp_time(current_value)
             end
-            socket.puts("The value was updated with #{new_command.data}")
+            if new_command.reply
+                if new_command.reply.downcase == 'y' 
+                    store_message()
+                end
+            end
         else
-            socket.puts("The key does not exist.")
+            if new_command.reply
+                if new_command.reply.downcase == 'y' 
+                    not_found_message()
+                end
+            end
         end 
         newline_prompt()
     end
     
-    def cas(key, value, values)
+    def cas(new_command, values)
         current_value_key = ''
-        if(values.has_key?(key))
-            current_value_key = values[key].keys[0]
-            if (values[key][current_value_key] == socket)
-                values[key] = {value => socket}
-                socket.puts("The value was updated with #{value}")
+        if(values.has_key?(new_command.key))
+            if (values[new_command.key].member_socket[0] == new_command.member_socket[0])
+                values[new_command.key].data = new_command.data 
+                values[new_command.key].exptime = new_command.exptime 
+                values[new_command.key].can_get = assign_can_get(new_command.exptime)
+                if (new_command.exptime.to_i > 0 && new_command.can_get)
+                    verify_exp_time(current_value)
+                end
+                if new_command.reply
+                    if new_command.reply.downcase == 'y' 
+                        store_message()
+                    end
+                end
             else
-                socket.puts("The value can't cas by you beacouse other user updated the value for #{key}.")
+                if new_command.reply
+                    if new_command.reply.downcase == 'y' 
+                       not_store()
+                    end
+                end
             end
         else
-            socket.puts("The key does not exist.")
+            if new_command.reply
+                if new_command.reply.downcase == 'y' 
+                    not_found_message()
+                end
+            end
         end 
         newline_prompt()
     end
@@ -134,15 +172,40 @@ class Member
     end
     
     def help()
-        socket.puts("This is the list with know commands
-        * set \n
-        * add \n
-        * replace \n
-        * append \n
-        * prepend \n
+        socket.puts("
+        *Command structure is* > command_name key data exptime bytes, reply
+        For example: add name user1 10 4 Y \n
+        This is the list with know commands
+        - Retrieval commands
+        * get
+        * gets \n
+        - Storage commands
+        * set
+        * add
+        * replace
+        * append 
+        * prepend
         * cas \n
-        * get \n
-        * gets") 
+        To close connection 'ctrl + c'
+        ") 
         newline_prompt()
     end
+
+    private
+    def store_message()
+        socket.puts("STORED")
+    end
+
+    def not_store()
+        socket.puts("NOT_STORED")
+    end
+
+    def exists_message()
+        socket.puts('EXISTS')
+    end
+
+    def not_found_message()
+        socket.puts('NOT_FOUND')
+    end
+    
 end

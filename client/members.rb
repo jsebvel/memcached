@@ -18,15 +18,6 @@ class Members
         @members.delete(member)
     end
 
-    # def broadcast(message, sender)
-    #     sender.prompt
-    #     receivers = @members - [sender]
-    #     receivers.each do |receiver|
-    #         receiver.socket.print("\n> #{sender.username}: #{message}")
-    #         receiver.newline_prompt
-    #     end
-    # end
-
     def register(socket)
         username = get_member_info(socket)
         member = Member.new(username, socket)
@@ -40,53 +31,51 @@ class Members
         loop do
             message = member.listen
             handleCommand(message.split(" "), member, @values)
-            #broadcast(message, member)
         end
     end
 
     def disconnect(member)
-        #broadcast("[left]", member.username)
         member.disconnect
         remove(member)
     end
 
     private
     def get_member_info(socket)
-        socket.print "What's your name? \n>"
+        socket.print "Hello! please tell us your name \n> "
         username = socket.gets.chomp
     end
 
     private
     def handleCommand(message, member, values)
         member_socket = member.socket
-        command_name, key, data, exptime, bytes, no_reply = message
-        #can_get = assign_can_get(exptime)
-        new_command  = Command.new(member_socket, command_name, key, data, exptime, bytes, no_reply, true)
-        case command_name
-        when "add"
-            member.add(new_command, values)
-        when "get"
-            print("Enter in get \n")
+        command_name, key, data, exptime, bytes, reply = message
+        new_command  = Command.new(member_socket, command_name, key, data, exptime, bytes, reply, true)
+        if (command_name == 'help')
+            member.help
+        elsif (command_name == 'get')
             member.get(key, values)
-        when "set"
-            member.set(new_command, values)
-        when "append"
-            print("Enter print\n")
-            member.append(new_command, values)
-        # when "prepend"
-        #     print("Enter prepend \n")
-        #     member.prepend(key, value)
-        when "replace"
-            print("Enter replace \n")
-            member.replace(new_command, values)
-        # when "cas"
-        #     print("Enter cas \n")
-        #     member.cas(key, value, values)
-        # when "help"
-        #     member.help()
         else
-            member.socket.puts("ERROR We can't find the command '#{command}'. enter help to see the accepted commands")
-            member.socket.puts(">")
-        end    
+            unless ([command_name, key, data, exptime, bytes].include?(nil))
+                case command_name
+                when "add"
+                    member.add(new_command, values)
+                when "set"
+                    member.set(new_command, values)
+                when "append", "prepend"
+                    print("Enter print\n")
+                    member.append_prepend(new_command, values)
+                when "replace"
+                    print("Enter replace \n")
+                    member.replace(new_command, values)
+                when "cas"
+                    print("Enter cas \n")
+                    member.cas(new_command, values)
+                else
+                    member.socket.puts("ERROR => We can't find the command '#{command_name}'. enter help to see the accepted commands")
+                end
+            else
+                member.socket.puts("CLIENT_ERROR => Type 'help' to see commands and structure.")
+            end
+        end
     end
 end
