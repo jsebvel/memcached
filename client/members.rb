@@ -59,9 +59,9 @@ class Members
     private
     def handleCommand(message, member, values)
         member_socket = member.socket
-        command_name, key, flags, exptime, bytes, no_reply = message
+        command_name, key, data, exptime, bytes, no_reply = message
         #can_get = assign_can_get(exptime)
-        new_command  = Command.new(member_socket, command_name, key, flags, exptime, bytes, no_reply, true)
+        new_command  = Command.new(member_socket, command_name, key, data, exptime, bytes, no_reply, true)
         case command_name
         when "add"
             member.add(new_command, values)
@@ -70,9 +70,9 @@ class Members
             member.get(key, values)
         when "set"
             member.set(new_command, values)
-        # when "append"
-        #     print("Enter print\n")
-        #     member.append(key, value)
+        when "append"
+            print("Enter print\n")
+            member.append(new_command, values)
         # when "prepend"
         #     print("Enter prepend \n")
         #     member.prepend(key, value)

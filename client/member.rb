@@ -47,7 +47,7 @@ class Member
     def get(key, values)
         resp = values[key]
         if (!resp.nil? && resp.can_get)
-            socket.puts("The value for #{key} is #{resp.flags}")
+            socket.puts("The value for #{key} is #{resp.data}")
         else
             socket.puts("There are not a value for key '#{key}'.")
         end
@@ -60,9 +60,15 @@ class Member
         newline_prompt()
     end
 
-    def append(new_command)
-        values[key] = "#{values[key]}, #{value}"
-        socket.puts("The value was append to key #{key}.")
+    def append(new_command, values)
+        if (values.has_key? (command.key))
+            values[key].can_get = assign_can_get(new_command.exptime)
+            values[key].exptime = new_command.exptime
+            values[key].data = "#{values[key].data} #{new_comand.data}"
+            if (new_command.exptime.to_i > 0 && new_command.can_get)
+                verify_exp_time(new_command)
+            end
+        end
         newline_prompt()
     end
 
@@ -76,13 +82,13 @@ class Member
         current_value = ''
         if(values.has_key?(new_command.key) && values[new_command.key].can_get )
             current_value = values[new_command.key]
-            current_value.flags = new_command.flags
+            current_value.data = new_command.data
             current_value.exptime = new_command.exptime
             current_value.can_get = assign_can_get(new_command.exptime)
             if (new_command.exptime.to_i > 0 && new_command.can_get)
                 verify_exp_time(current_value)
             end
-            socket.puts("The value was updated with #{new_command.flags}")
+            socket.puts("The value was updated with #{new_command.data}")
         else
             socket.puts("The key does not exist.")
         end 
