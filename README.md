@@ -16,7 +16,6 @@ https://archlinux.org/packages/extra/x86_64/gnu-netcat/
 
 ## Command list
 Next you can find list with accepted commands
-
 * set
 * add
 * replace
@@ -26,4 +25,6 @@ Next you can find list with accepted commands
 * get
 * gets
 
+##Help
+If you need some help please type the command `help` after enter your name.
 ## Test
