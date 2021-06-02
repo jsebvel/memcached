@@ -58,9 +58,17 @@ class Member
         newline_prompt()
     end
 
-    def set(new_comand, values)
+    def set(new_command, values)
         values[new_command.key]=new_command
-        socket.puts("STORE => The value was set")
+        if new_command.reply
+            if new_command.reply.downcase == 'y' 
+                store_message()
+            end
+            values[new_command.key].can_get = assign_can_get(new_command.exptime)
+            if (new_command.exptime.to_i > 0 && new_command.can_get)
+                verify_exp_time(new_command)
+            end
+        end
         newline_prompt()
     end
 
@@ -152,18 +160,14 @@ class Member
     def verify_exp_time(new_command)
         Thread.new(new_command.exptime) do
             while new_command.exptime.to_i > 0
-                print("In #{new_command.exptime}\n")
                 new_command.exptime = new_command.exptime.to_i - 1
-                print(new_command.can_get)
                 sleep(1)
             end
             new_command.can_get = false
-            print(new_command.can_get)
         end
     end
 
     def assign_can_get(exptime)
-        print(exptime)
         if exptime.to_i >= 0
             true
         else

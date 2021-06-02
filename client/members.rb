@@ -23,7 +23,6 @@ class Members
         member = Member.new(username, socket)
         member.welcome_from(self)
         add(member)
-        #broadcast("[joined]", member)
         member
     end
 
@@ -55,20 +54,17 @@ class Members
         elsif (command_name == 'get')
             member.get(key, values)
         else
-            unless ([command_name, key, data, exptime, bytes].include?(nil))
+            unless ([command_name, key, data, exptime, bytes, reply].include?(nil)) 
                 case command_name
                 when "add"
                     member.add(new_command, values)
                 when "set"
                     member.set(new_command, values)
                 when "append", "prepend"
-                    print("Enter print\n")
                     member.append_prepend(new_command, values)
                 when "replace"
-                    print("Enter replace \n")
                     member.replace(new_command, values)
                 when "cas"
-                    print("Enter cas \n")
                     member.cas(new_command, values)
                 else
                     member.socket.puts("ERROR => We can't find the command '#{command_name}'. enter help to see the accepted commands")

@@ -4,7 +4,8 @@ This project was implement with Ruby 3.0.1
 
 ## Development server
 Get into server directory and run `ruby server.rb` for start the server at port 2000.
-
+When you see the message 'Server start at port 2000' you need to open new command line. You can run this new command line from any directory
+In this new command line, you can send the commands.
 ## Send commands
 To send commands you need to install netcat or any tool with the same purpose
 After you install the tool, you need to run according the tool you have installed. For example, to run netcat
