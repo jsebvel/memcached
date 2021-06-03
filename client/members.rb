@@ -21,7 +21,7 @@ class Members
     def register(socket)
         username = get_member_info(socket)
         member = Member.new(username, socket)
-        member.welcome_from(self)
+        member.welcome_from()
         add(member)
         member
     end

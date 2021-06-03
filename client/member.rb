@@ -7,7 +7,7 @@ class Member
         #@values = {}
     end
 
-    def welcome_from(members)
+    def welcome_from()
         socket.print "Welcome #{username}, Please enter commands in the next line.\nRemember command structure 'command name' 'key' 'data' 'except time' 'bytes' 'no reply'. \n"
         newline_prompt()
     end
@@ -198,6 +198,7 @@ class Member
     private
     def store_message()
         socket.puts("STORED")
+        return "STORE"
     end
 
     def not_store()
