@@ -29,6 +29,11 @@ describe "#member" do
             expect(values[add_command.key].key).to eq("name") 
         end
 
+        it "Can get should be false" do
+            add_command_cannotget = Command.new(socket, "add", "name", "sebvel", -5, 0, "y", true)
+            new_member.add(add_command_cannotget, values)
+            expect(values[add_command_cannotget.key].can_get).to be false 
+        end
         it "Can get should be false after 2 seconds" do
             new_member.add(add_command_extime, values)
             expect(values[add_command_extime.key].can_get).to be true 
@@ -52,6 +57,14 @@ describe "#member" do
     end
 
     context 'test about set command' do
+        before do
+            values = {}
+        end
+
+        after do
+            values = {}
+        end
+
         set_command = Command.new(socket, "set", "name", "sebastian", 0, 0, "y", true)
         new_member.add(add_command, values)
         it "Values on name key position should have value = 'sebastian" do
@@ -72,11 +85,48 @@ describe "#member" do
             expect(values[set_command.key].can_get).to be false
         end
 
-        it "can_get for values[name] should be true" do
-            set_command = Command.new(socket, "set", "name", "sebastian", 0, 0, "y", false)
+        it "can_get for values[name] should be false" do
+            set_command = Command.new(socket, "set", "name", "sebastian", -3, 0, "y", false)
             new_member.set(set_command, values)
-            sleep(set_command.exptime)
-            expect(values[set_command.key].can_get).to be true
+            expect(values[set_command.key].can_get).to be false
+        end
+
+        it "Value can_get should be true after execute set command" do
+            add_command_no_get = Command.new(socket, "add", "lastname", "velasquez", -2, 0, "y", false)
+            set_command_can_get = Command.new(socket, "set", "name", "sebastian", 0, 0, "y", false)
+            new_member.add(add_command_no_get, values)
+            new_member.set(set_command_can_get, values)
+            expect(values[set_command_can_get.key].can_get).to be true
+        end
+    end
+
+    context "test about replace command" do
+        
+    end
+
+    context "test about 'cas' command" do
+        before do
+            values = {}
+        end
+
+        after do
+            values = {}
+        end
+
+        cas_command = Command.new(socket, "cas", "name", "johan", 0, 0, "y", false)
+        
+        it "sould update name with cas name 'johan" do
+            new_member.add(add_command, values)
+            new_member.cas(cas_command, values)
+            expect(values[cas_command.key].data).to eql("johan")
+        end
+        
+        it "should not update name with cas data 'johan' " do
+            cas_socket = TCPSocket.new("localhost", 2000)
+            new_member.add(add_command, values)
+            cas_command = Command.new(cas_socket, "cas", "name", "julian", 0, 0, "y", false)
+            new_member.cas(cas_command, values)
+            expect(values[cas_command.key].data).not_to eql("julian")
         end
     end
 end
