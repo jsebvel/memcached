@@ -32,5 +32,6 @@ To run test, you need to install bundle with `gem install bundler`, after this, 
 This command should be run at project root directory.
 If you get error like "WARNING: You don't have <a directory> in your PATH, gem executables will not run", you need to add at your path: 
 export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
+  
 export PATH="$PATH:$GEM_HOME/bin"
 This for linux.
