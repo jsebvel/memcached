@@ -28,5 +28,5 @@ Next you can find list with accepted commands
 ## Help
 If you need some help please type the command `help` after enter your name.
 ## Test
-To run test, you need to install 'rspec' with `gem install rspec`. After installation you need to start the server and run in a new command line, the command `bundle exec rspec`.
+To run test, you need to install 'rspec' with bundle, execute `bundle install --binstubs`. After installation you need to start the server and run in a new command line, the command `bundle exec rspec`.
 This command should be run at project root directory.
