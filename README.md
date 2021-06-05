@@ -31,7 +31,8 @@ If you need some help please type the command `help` after enter your name.
 To run test, you need to install bundle with `gem install bundler`, after this, you need to install 'rspec' with bundle, execute at root folder `bundle install --binstubs`. After installation you need to start the server and run in a new command line, the command `bundle exec rspec`.
 This command should be run at project root directory.
 If you get error like "WARNING: You don't have <a directory> in your PATH, gem executables will not run", you need to add at your path: 
-export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
+
+  export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
   
-export PATH="$PATH:$GEM_HOME/bin"
+  export PATH="$PATH:$GEM_HOME/bin"
 This for linux.
