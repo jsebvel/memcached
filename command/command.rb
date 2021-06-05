@@ -11,8 +11,4 @@ class Command
         @reply = reply
         @can_get = can_get
     end
-
-    def update_attribute(attrbutes)
-
-    end
 end

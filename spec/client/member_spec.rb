@@ -10,15 +10,16 @@ describe "#member" do
     add_command_extime = Command.new(socket, "add", "name", "sebvel", 2, 0, "y", true)
     add_bad_command =  Command.new(socket, nil, nil, "sebvel", 5, 0, "y", true)
     
-    context 'test about member add command' do
-        before do
-            values = {}
-        end
-
-        after do
-            values = {}
-        end
+    before do
+        values = {}
+        add_command = Command.new(socket, "add", "name", "sebvel", 0, 0, "y", true)
+    end
     
+    after do
+        add_command = Command.new(socket, "add", "name", "sebvel", 0, 0, "y", true)
+        values = {}
+    end
+    context 'test about member add command' do
         it 'Values should have length 1' do
             new_member.add(add_command, values)
             expect(values.length).to be 1
@@ -37,7 +38,7 @@ describe "#member" do
         it "Can get should be false after 2 seconds" do
             new_member.add(add_command_extime, values)
             expect(values[add_command_extime.key].can_get).to be true 
-            sleep(add_command_extime.exptime)
+            sleep(add_command_extime.exptime + 1)
             expect(values[add_command_extime.key].can_get).to be false 
         end
 
@@ -57,25 +58,11 @@ describe "#member" do
     end
 
     context 'test about set command' do
-        before do
-            values = {}
-        end
-
-        after do
-            values = {}
-        end
-
         set_command = Command.new(socket, "set", "name", "sebastian", 0, 0, "y", true)
         new_member.add(add_command, values)
         it "Values on name key position should have value = 'sebastian" do
             new_member.set(set_command, values)
             expect(values[set_command.key].data).to eq("sebastian")
-        end
-
-        it "exptime for values[name] should be 10" do
-            set_command = Command.new(socket, "set", "name", "sebastian", 10, 0, "y", true)
-            new_member.set(set_command, values)
-            expect(values[set_command.key].exptime).to be 10
         end
 
         it "can_get for values[name] should be false after 3 seconds" do
@@ -101,18 +88,49 @@ describe "#member" do
     end
 
     context "test about replace command" do
+
+        it 'update the value por key name' do
+            replace_command = Command.new(socket, "replace", "name", "andres", 0, 0, "y", false)
+            new_member.add(add_command, values)
+            new_member.replace(replace_command, values)
+            expect(values[replace_command.key].data).to eq("andres")
+        end
         
+        it 'Value can get should be false after replace' do
+            replace_command = Command.new(socket, "replace", "name", "andres", -5, 0, "y", false)
+            new_member.add(add_command, values)
+            expect(values[replace_command.key].can_get).to be true
+            new_member.replace(replace_command, values)
+            expect(values[replace_command.key].can_get).to be false
+        end
+
+        it "Can get should be false after 2 seconds" do
+            replace_command = Command.new(socket, "replace", "name", "andres", 2, 0, "y", false)
+            new_member.add(add_command, values)
+            new_member.replace(replace_command, values)
+            sleep replace_command.exptime
+            expect(values[replace_command.key].can_get).to be true
+        end
+
+    end
+  
+    context 'Test about append and prepend command' do
+
+        it "should append 'rivera' to name value " do
+            append_command = Command.new(socket, "append", "name", "rivera", 0, 0, "y", false)
+            new_member.add(add_command, values)
+            new_member.append_prepend(append_command, values)
+            expect(values[append_command.key].data).to eq("sebvel rivera")
+        end
+        it "should append 'johan' to name value " do
+            prepend_command = Command.new(socket, "prepend", "name", "johan", 0, 0, "y", false)
+            new_member.add(add_command, values)
+            new_member.append_prepend(prepend_command, values)
+            expect(values[prepend_command.key].data).to eq("johan sebvel")
+        end
     end
 
     context "test about 'cas' command" do
-        before do
-            values = {}
-        end
-
-        after do
-            values = {}
-        end
-
         cas_command = Command.new(socket, "cas", "name", "johan", 0, 0, "y", false)
         
         it "sould update name with cas name 'johan" do

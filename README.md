@@ -1,4 +1,4 @@
-# Memchaed Serve
+# Memchaed Server
 This project was implemented with Ruby 3.0.1
 
 
@@ -29,4 +29,4 @@ Next you can find list with accepted commands
 If you need some help please type the command `help` after enter your name.
 ## Test
 To run test, you need to install 'rspec' with `gem install rspec`. After installation you need to start the server and run in a new command line, the command `bundle exec rspec`.
-This command can run at project root directory.
+This command should be run at project root directory.
