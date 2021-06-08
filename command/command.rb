@@ -1,3 +1,4 @@
+require "../command_function/CommandFunction"
 class Command
     attr_accessor :member_socket, :command_name, :key, :data, :exptime, :bytes, :reply, :can_get
 
@@ -13,6 +14,7 @@ class Command
     end
 
     def handle_command(new_command, member, values)
+        command_function = CommandFunction.new()
         if (new_command.command_name == 'help')
             member.help
         elsif (new_command.command_name == 'get')
@@ -21,7 +23,7 @@ class Command
             unless ([new_command.command_name, new_command.key, new_command.data, new_command.exptime, new_command.bytes, new_command.reply].include?(nil)) 
                 case new_command.command_name
                 when "add"
-                    member.add(new_command, values)
+                    command_function.add(new_command, values)
                 when "set"
                     member.set(new_command, values)
                 when "append", "prepend"
