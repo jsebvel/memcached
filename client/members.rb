@@ -1,5 +1,4 @@
 require_relative '../command/command'
-require 'pry'
 class Members
     include Enumerable
     def initialize

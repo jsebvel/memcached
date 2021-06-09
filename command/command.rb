@@ -1,4 +1,4 @@
-require "../command_function/command_function"
+require "./command_function/command_function"
 class Command
     attr_accessor :member_socket, :command_name, :key, :data, :exptime, :bytes, :reply, :can_get, :command_function
 
