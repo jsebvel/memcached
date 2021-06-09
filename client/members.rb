@@ -1,4 +1,5 @@
 require_relative '../command/command'
+require 'pry'
 class Members
     include Enumerable
     def initialize
@@ -32,7 +33,7 @@ class Members
             message = member.listen
             member_socket = member.socket
             command_name, key, data, exptime, bytes, reply = message.split(" ")
-            @command = Command.new(member_socket, command_name, key, data, exptime, bytes, reply, true)
+            @command = Command.new(member.socket, command_name, key, data, exptime, bytes, reply, true)
             @command.handle_command(@command, member, @values)
         end
     end
