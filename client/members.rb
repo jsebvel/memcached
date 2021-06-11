@@ -1,5 +1,6 @@
 require_relative '../command/command'
 class Members
+    attr_accessor :members, :values, :command
     include Enumerable
     def initialize
         @members = []
