@@ -1,12 +1,18 @@
+require "pry"
 class CommandFunction
+    attr_writer :result;
+
+    def initialize
+        @result =  ""
+    end
     def add(new_command, values)
-        is_adding = 
+        #is_adding = 
         unless values.has_key?(new_command.key)
             values[new_command.key] = new_command
             new_command.can_get = assign_can_get(new_command.exptime)
             if new_command.reply
                 if new_command.reply.downcase == 'y' 
-                    store_message(new_command.member_socket[0])
+                    @result = store_message(new_command.member_socket[0])
                 end
             end
             if (new_command.exptime.to_i > 0 && new_command.can_get)
@@ -15,28 +21,30 @@ class CommandFunction
         else
             if new_command.reply
                 if new_command.reply.downcase == 'y' 
-                    exists_message(new_command.member_socket[0])
+                    @result = exists_message(new_command.member_socket[0])
                 end
             end
         end
         newline_prompt(new_command.member_socket[0])
+        @result
     end
 
     def get(new_command, values)
         resp = values[new_command.key]
         if (!resp.nil? && resp.can_get) 
-            resp.member_socket[0].puts("The value for #{new_command.key} is #{resp.data}")
+            @result = resp.member_socket[0].puts("The value for #{new_command.key} is #{resp.data}")
         else
-            new_command.member_socket[0].puts("NOT_FOUND '#{new_command.key}'.")
+            @result = new_command.member_socket[0].puts("NOT_FOUND '#{new_command.key}'.")
         end
         newline_prompt(new_command.member_socket[0])
+        @result
     end
 
     def set(new_command, values)
         values[new_command.key]=new_command
         if new_command.reply
             if new_command.reply.downcase == 'y' 
-                store_message(new_command.member_socket[0])
+                @result  = store_message(new_command.member_socket[0])
             end
             values[new_command.key].can_get = assign_can_get(new_command.exptime)
             if (new_command.exptime.to_i > 0 && new_command.can_get)
@@ -44,9 +52,10 @@ class CommandFunction
             end
         end
         newline_prompt(new_command.member_socket[0])
+        @result
     end
 
-    def append_prepend(new_command, values)
+    def append_prepend(new_command, values);
         if (values.has_key? (new_command.key))
             values[new_command.key].can_get = assign_can_get(new_command.exptime)
             values[new_command.key].exptime = new_command.exptime
@@ -57,7 +66,7 @@ class CommandFunction
             end
             if new_command.reply
                 if new_command.reply.downcase == 'y' 
-                    store_message(new_command.member_socket[0])
+                    @result = store_message(new_command.member_socket[0])
                 end
             end
             if (new_command.exptime.to_i > 0 && new_command.can_get)
@@ -66,11 +75,12 @@ class CommandFunction
         else
             if new_command.reply
                 if new_command.reply.downcase == 'y' 
-                    not_found_message(new_command.member_socket[0])
+                    @result = not_found_message(new_command.member_socket[0])
                 end
             end
         end
         newline_prompt(new_command.member_socket[0])
+        @result
     end
 
     def replace(new_command, values)
@@ -86,17 +96,18 @@ class CommandFunction
             end
             if new_command.reply
                 if new_command.reply.downcase == 'y' 
-                    store_message(new_command.member_socket[0])
+                    @result = store_message(new_command.member_socket[0])
                 end
             end
         else
             if new_command.reply
                 if new_command.reply.downcase == 'y' 
-                    not_found_message(new_command.member_socket[0])
+                    @result = not_found_message(new_command.member_socket[0])
                 end
             end
         end 
         newline_prompt(new_command.member_socket[0])
+        @result
     end
     
     def cas(new_command, values)
@@ -111,24 +122,25 @@ class CommandFunction
                 end
                 if new_command.reply
                     if new_command.reply.downcase == 'y' 
-                        store_message(new_command.member_socket[0])
+                        @result = store_message(new_command.member_socket[0])
                     end
                 end
             else
                 if new_command.reply
                     if new_command.reply.downcase == 'y' 
-                       not_store(new_command.member_socket[0])
+                        @result = not_store(new_command.member_socket[0])
                     end
                 end
             end
         else
             if new_command.reply
                 if new_command.reply.downcase == 'y' 
-                    not_found_message(new_command.member_socket[0])
+                    @result = not_found_message(new_command.member_socket[0])
                 end
             end
         end 
         newline_prompt(new_command.member_socket[0])
+        @result
     end
 
     def verify_exp_time(new_command)
@@ -178,16 +190,20 @@ class CommandFunction
         socket.puts("STORED")
         return "STORE"
     end
-
+    
     def not_store(socket)
         socket.puts("NOT_STORED")
+        return "NOT_STORED"
     end
 
     def exists_message(socket)
         socket.puts('EXISTS')
+        return "EXISTS"
+        
     end
 
     def not_found_message(socket)
         socket.puts('NOT_FOUND')
+        "NOT_FOUND"
     end
 end
