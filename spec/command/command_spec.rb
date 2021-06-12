@@ -92,5 +92,17 @@ describe '#command' do
             expect(values["name"].data).to eq("manuel")
             expect(result).to eq("NOT_FOUND")
         end
+
+        it ("should get value for key  'name'") do
+            get_command = Command.new(socket, "get", "name", nil, nil, nil, nil, nil)
+            result = get_command.handle_command(get_command, member, values)
+            expect(result).to eq("manuel")
+        end
+
+        it ("should can't get value for non existent key 'lastname'") do
+            get_command = Command.new(socket, "get", "lastname", nil, nil, nil, nil, nil)
+            result = get_command.handle_command(get_command, member, values)
+            expect(result).to eq("NOT_FOUND")
+        end
     end
 end

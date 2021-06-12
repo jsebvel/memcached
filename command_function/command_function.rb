@@ -32,9 +32,11 @@ class CommandFunction
     def get(new_command, values)
         resp = values[new_command.key]
         if (!resp.nil? && resp.can_get) 
-            @result = resp.member_socket[0].puts("The value for #{new_command.key} is #{resp.data}")
+            @result = resp.data
+            resp.member_socket[0].puts(@result)
         else
-            @result = new_command.member_socket[0].puts("NOT_FOUND '#{new_command.key}'.")
+            new_command.member_socket[0].puts("NOT_FOUND '#{new_command.key}'.")
+            @result = "NOT_FOUND"
         end
         newline_prompt(new_command.member_socket[0])
         @result
