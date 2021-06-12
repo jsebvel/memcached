@@ -1,7 +1,6 @@
 require_relative "../../client/member"
 require_relative "../../command/command"
 require 'socket'
-require "pry"
 
 describe '#command' do
     socket = TCPSocket.new("localhost", 2000)
