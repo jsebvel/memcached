@@ -1,6 +1,6 @@
 require "./command_function/command_function"
 class Command
-    attr_accessor :member_socket, :command_name, :key, :data, :exptime, :bytes, :reply, :can_get, :command_function
+    attr_accessor :member_socket, :command_name, :key, :data, :exptime, :bytes, :reply, :can_get, :command_function, :can_update
 
     def initialize(member_socket, command_name, key, data, exptime, bytes, reply, can_get)
         @member_socket = member_socket,
@@ -12,6 +12,7 @@ class Command
         @reply = reply
         @can_get = can_get
         @command_function = CommandFunction.new()
+        @can_update
     end
 
     def handle_command(new_command, member, values) 
